@@ -1,0 +1,17 @@
+<template>
+    <div class="custom-price-csv-import">
+        <input
+                type="file"
+                ref="csvFileInput"
+                @change="handleFileUpload"
+                accept=".csv"
+                style="display: none"
+        />
+        <sw-button @click="triggerFileUpload">
+             Import CSV
+        </sw-button>
+    <sw-button @click="exportCSV" :disabled="isExporting">
+         Export CSV
+    </sw-button>
+    </div>
+</template>

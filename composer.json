@@ -1,0 +1,27 @@
+{
+    "name": "s25-quotes/s25-quotes",
+    "description": "s25-quotes/s25-quotes",
+    "type": "shopware-platform-plugin",
+    "version": "1.0.0",
+    "license": "MIT",
+    "require": {
+        "shopware/core": "~6.6.0"
+    },
+    "extra": {
+        "shopware-plugin-class": "S25Quotes\\s25Quotes",
+        "label": {
+            "de-DE": "s25 Quotes",
+            "en-GB": "s25 Quotes"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "S25Quotes\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "S25Quotes\\Tests\\": "tests/"
+        }
+    }
+}

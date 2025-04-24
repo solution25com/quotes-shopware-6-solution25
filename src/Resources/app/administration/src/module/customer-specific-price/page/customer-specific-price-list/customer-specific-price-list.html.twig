@@ -1,0 +1,155 @@
+<template>
+
+    <sw-page :headerBorderColor="'#00A1FF'" class="customer-specific-price-list">
+        <template #smart-bar-header>
+            <sw-page-title class="customPricesTitle">Add Custom Price</sw-page-title>
+            <div class="customPricesBtnWrapper">
+                <sw-data-csv @import-start="isImporting = true" @import-finish="handleImportFinish"></sw-data-csv>            
+                    <sw-button
+                        variant="primary"
+                        @click="openAddCustomPriceModal"
+                        class="sw-page__header-add-credit-button"
+                >
+                    Add Custom Price
+                </sw-button>
+            </div>
+        </template>
+        <template #content>
+            <div v-if="isImporting" class="csv-loader-container">
+                <sw-loader></sw-loader>
+                <p class="importing-description">Importing CSV...</p>
+            </div>
+            <sw-data-grid :dataSource="prices" :columns="columns" :isLoading="isLoading">
+                <template #column-customerName="{ item }">
+                <sw-skeleton-bar v-if="isLoading" />
+                <a v-else :href="`/admin#/sw/customer/detail/${item.customerId}/base`" class="link">
+                    {{ item.customerName }}
+                </a>
+            </template>   <template #column-product="{ item }">
+                <sw-skeleton-bar v-if="isLoading" />
+                <span v-else>{{ item.product }}</span>
+            </template>
+            <template #column-netPrice="{ item }">
+                <sw-skeleton-bar v-if="isLoading" />
+                <span v-else>{{ item.netPrice }}</span>
+            </template>
+
+            <template #column-grossPrice="{ item }">
+                <sw-skeleton-bar v-if="isLoading" />
+                <span v-else>{{ item.grossPrice }}</span>
+            </template>
+                <template #actions="{ item }">
+                    <sw-context-menu-item
+                            @click="openEditCustomPriceModal(item)"
+                    >
+                        Edit
+                    </sw-context-menu-item>
+                    <sw-context-menu-item
+                            @click="openDeleteModal(item.id)"
+                            variant="danger"
+                    >
+                        Delete
+                    </sw-context-menu-item>
+                </template>
+            </sw-data-grid>
+
+            <div>
+                <sw-pagination :total="total" :limit="limit" @limitChange="onPageChange" :page="page" @pageChange="onPageChange"></sw-pagination>
+            </div>
+        </template>
+    </sw-page>
+    <sw-modal v-if="showDeleteModal" @modal-close="closeDeleteModal">
+        <template #modal-header>
+            <h2>Confirm Deletion</h2>
+        </template>
+
+        <p>Are you sure you want to delete this custom price?</p>
+
+        <template #modal-footer>
+            <sw-button variant="primary" @click="confirmDelete">Yes, Delete</sw-button>
+            <sw-button variant="secondary" @click="closeDeleteModal">Cancel</sw-button>
+        </template>
+    </sw-modal>
+    <sw-modal
+            v-if="showAddCustomPriceModal"
+            title="Add Custom Price"
+            @modal-close="showAddCustomPriceModal = false"
+            size="large"
+            class="custom-medium-modal"
+    >
+        <sw-tabs>
+            <sw-tabs-item
+                    :active="selectedTab === 'customer'"
+                    @click="selectedTab = 'customer'"
+            >
+                Customer
+            </sw-tabs-item>
+            <sw-tabs-item
+                    :active="selectedTab === 'product'"
+                    @click="selectedTab = 'product'"
+            >
+                Product
+            </sw-tabs-item>
+            <sw-tabs-item
+                    :active="selectedTab === 'price'"
+                    @click="selectedTab = 'price'"
+            >
+                Price
+            </sw-tabs-item>
+        </sw-tabs>
+        <div class="tab-content">
+            <div v-if="selectedTab === 'customer'">
+                <sw-customer-select v-model:value="selectedCustomer"/>
+            </div>
+            <div v-if="selectedTab === 'product'">
+                <sw-product-select v-model:value="selectedProduct"/>
+            </div>
+            <div v-if="selectedTab === 'price'">
+                <sw-card title="Amount">
+                    <sw-number-field
+                            v-model:value="newCustomerAmount"
+                            :min="0.00"
+                            :step="1.00"
+                            :number-type="'float'"
+                            placeholder="Enter amount"
+                    />
+                </sw-card>
+            </div>
+        </div>
+        <template #modal-footer>
+            <sw-button @click="addOrUpdateCustomPrice" size="small" variant="primary">
+                Submit
+            </sw-button>
+            <sw-button @click="showAddCustomPriceModal = false" size="small" variant="danger">
+                Cancel
+            </sw-button>
+        </template>
+    </sw-modal>
+    <sw-modal
+            v-if="showEditCustomPriceModal"
+            title="Edit Custom Price"
+            @modal-close="showEditCustomPriceModal = false"
+            size="medium"
+    >
+        <sw-card>
+            <sw-number-field
+                    v-model:value="newCustomerAmount"
+                    label="Amount"
+                    :min="0.00"
+                    :step="1.00"
+                    :number-type="'float'"
+                    placeholder="Enter new price"
+            />
+        </sw-card>
+
+        <template #modal-footer>
+            <sw-button @click="addOrUpdateCustomPrice" size="small" variant="primary">
+                Save Changes
+            </sw-button>
+            <sw-button @click="showEditCustomPriceModal = false" size="small" variant="danger">
+                Cancel
+            </sw-button>
+        </template>
+    </sw-modal>
+
+</template>

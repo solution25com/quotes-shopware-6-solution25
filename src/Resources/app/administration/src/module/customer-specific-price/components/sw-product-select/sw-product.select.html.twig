@@ -1,0 +1,29 @@
+<template>
+  <sw-card title="Select Product">
+    <sw-simple-search-field 
+      v-model:value="searchTerm" 
+      placeholder="Search for products..."
+      @search="onSearch"
+    />
+
+    <sw-data-grid
+      :dataSource="productOptions"
+      :columns="columns"
+      :isLoading="isLoading"
+      :identifier="'id'"
+      :showSelection="true"
+      @selectItem="onSelectProduct"
+    >
+      <template #column-name="{ item }">
+        {{ item.label }}
+      </template>
+    </sw-data-grid>
+
+    <sw-pagination
+      :total="totalProducts"
+      :page="page"
+      :limit="limit"
+      @pageChange="onPageChange"
+    />
+  </sw-card>
+</template>

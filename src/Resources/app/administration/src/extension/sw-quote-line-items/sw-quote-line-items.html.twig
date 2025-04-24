@@ -1,0 +1,11 @@
+{% block sw_quote_line_items_grid_actions %}
+    <template #column-persistPrice="{ item, isInlineEdit }">
+        <sw-checkbox-field
+            @update:value="(checked) => setPersistPrice(item, checked)"
+            :value="getPersistPrice(item)"
+            label="Persist Price"
+            :disabled="!acl.can('quote.editor') || !isInlineEdit || loading"
+        />
+    </template>
+    {{ parent() }}
+{% endblock %}
