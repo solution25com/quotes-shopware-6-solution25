@@ -1,0 +1,1 @@
+# quotes-shopware-6-solution25
